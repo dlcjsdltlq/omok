@@ -49,7 +49,8 @@ class Omok {
             this.getMouseCoord(evt);
         });
 
-        this.canvas.addEventListener('click', () => {
+        this.canvas.addEventListener('click', (evt) => {
+            this.getMouseCoord(evt);
             if (this.omok_board[this.mouse_y][this.mouse_x] !== -1 || !this.mouse_state) return;
             this.omok_board[this.mouse_y][this.mouse_x] = this.current_player;
             this.current_player = +!this.current_player;
