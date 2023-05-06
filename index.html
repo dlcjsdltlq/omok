@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-dynamic-subset.css');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css');
+
+        * {
+            font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            user-select: none;
+        }
+
+        #omok {
+            width: 800px;
+            height: 800px;
+            border: 2px solid rgb(142, 142, 142);
+            border-radius: 15px;
+            margin-top: 10px;
+            grid-row-start: 1;
+            grid-column-start: 1;
+        }
+
+        #player-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player {
+            display: flex;
+            flex-direction: row;
+            padding: 10px;
+            border-radius: 7px;
+            background-color: #FFF;
+        }
+
+        .player * {
+            align-self: center;
+        }
+
+        .turn {
+            background-color: #DDD !important;
+        }
+
+        .win {
+            background-color: #9fc7ff !important;
+        }
+
+        .win-text {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: #ff5151;
+        }
+
+        .ball {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 5px;
+            border: 1px solid black;
+        }
+
+        .black {
+            background-color: #000;
+        }
+
+        .white {
+            background-color: #FFF;
+        }
+
+        .name-input-wrapper {
+            grid-row-start: 1;
+            grid-column-start: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .name-input {
+            background-color: #EEE;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .name-input input {
+            border: none;
+            font-size: 20px;
+            padding: 10px;
+            margin: 7px;
+            border-radius: 8px;
+        }
+
+        .name-input input:focus {
+            outline: none;
+        }
+
+        .name-input button {
+            margin: 7px;
+            border: none;
+            background-color: rgb(20, 83, 255);
+            color: #FFF;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .name-input button:hover {
+            background-color: rgb(18, 69, 209);
+        }
+
+        .transparent {
+            opacity: 0 !important;
+        }
+
+        .overlay {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+        }
+    </style>
+    <title>오목</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>오목 게임</h1>
+        <div id="player-list">
+            <span class="player turn" data-player="0">
+                <div class="ball black"></div>
+                <span>
+                    <span class="name">플레이어1</span>
+                    <span class="turn-text">
+                        ← 턴
+                    </span>
+                    <div class="win-text" style="display: none;">
+                        우승!
+                    </div>
+                </span>
+            </span>
+            <span class="player" data-player="1">
+                <div class="ball white"></div>
+                <span>
+                    <span class="name">플레이어2</span>
+                    <span class="turn-text" style="display: none;">
+                        ← 턴
+                    </span>
+                    <div class="win-text" style="display: none;">
+                        우승!
+                    </div>
+                </span>
+            </span>
+        </div>
+        <div class="overlay">
+            <canvas id="omok"></canvas>
+            <div class="name-input-wrapper">
+                <div class="name-input">
+                    <input type="text" placeholder="흑돌 이름" data-input-player="0">
+                    <input type="text" placeholder="백돌 이름" data-input-player="1">
+                    <button id="start-btn">시작하기</button>
+                </div>
+            </div>
+        </div>
+        <script src="index.js"></script>
+    </div>
+</body>
+
+</html>
