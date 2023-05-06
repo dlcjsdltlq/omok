@@ -3,9 +3,11 @@ class Omok {
     ctx = this.canvas.getContext('2d');
 
     constructor() {
-        this.margin = 20;
         this.size = 800;
+        this.margin = this.size / 40;
         this.grid_size = (this.size - 2 * this.margin) / 15;
+
+        this.zoom_ratio = 1;
 
         this.mouse_x = 0;
         this.mouse_y = 0;
@@ -44,6 +46,7 @@ class Omok {
 
         this.pause_game = true;
 
+        
         this.canvas.addEventListener('mousemove', (evt) => {
             if (this.pause_game) return;
             this.getMouseCoord(evt);
@@ -82,6 +85,10 @@ class Omok {
         document.querySelector('.name-input').classList.add('transparent');
 
         setTimeout(() => document.querySelector('.name-input-wrapper').style.display = 'none', 1000);
+
+        if (this.canvas.clientWidth != this.size) {
+            this.zoom_ratio = this.size / this.canvas.clientWidth;
+        }
     }
 
     disablePlaying = () => {
@@ -147,9 +154,9 @@ class Omok {
         for (let i = this.margin; i < this.margin + (this.size - 2 * this.margin); i += this.grid_size) {
             this.ctx.beginPath();
             this.ctx.moveTo(this.margin, i);
-            this.ctx.lineTo(this.size - 20, i);
+            this.ctx.lineTo(this.size - this.margin, i);
             this.ctx.moveTo(i, this.margin);
-            this.ctx.lineTo(i, this.size - 20);
+            this.ctx.lineTo(i, this.size - this.margin);
             this.ctx.lineWidth = 1;
             this.ctx.strokeStyle = '#000';
             this.ctx.stroke();
@@ -157,8 +164,8 @@ class Omok {
     }
 
     drawBall = (x, y, color, stroke) => {
-        let realX = 20 + x * this.grid_size;
-        let realY = 20 + y * this.grid_size;
+        let realX = this.margin + x * this.grid_size;
+        let realY = this.margin + y * this.grid_size;
         this.ctx.beginPath();
         this.ctx.arc(realX, realY, this.grid_size / 3, 0, 2 * Math.PI);
         stroke && this.ctx.stroke();
@@ -188,7 +195,7 @@ class Omok {
 
     drawWinnerLine = () => {
         this.ctx.beginPath();
-        this.ctx.moveTo(20 + this.winner_info[2][0] * this.grid_size, 20 + this.winner_info[2][1] * this.grid_size);
+        this.ctx.moveTo(this.margin + this.winner_info[2][0] * this.grid_size, this.margin + this.winner_info[2][1] * this.grid_size);
 
         let time = new Date() - this.win_animation_time;
 
@@ -199,7 +206,7 @@ class Omok {
         let delta_x = this.win_line_x_distance * ratio;
         let delta_y = this.win_line_y_distance * ratio;
 
-        this.ctx.lineTo(20 + (this.winner_info[2][0] + delta_x) * this.grid_size, 20 + (this.winner_info[2][1] + delta_y) * this.grid_size);
+        this.ctx.lineTo(this.margin + (this.winner_info[2][0] + delta_x) * this.grid_size, this.margin + (this.winner_info[2][1] + delta_y) * this.grid_size);
         this.ctx.lineWidth = this.grid_size / 3;
         this.ctx.strokeStyle = 'rgba(159, 199, 255, 0.7)';
         this.ctx.lineCap = 'round';
@@ -218,12 +225,12 @@ class Omok {
 
     getMouseCoord = (evt) => {
         const rect = this.canvas.getBoundingClientRect();
-        let x = evt.clientX - rect.left;
-        let y = evt.clientY - rect.top;
-        this.mouse_x = Math.floor((x - 20 + this.grid_size / 2) / this.grid_size);
-        this.mouse_y = Math.floor((y - 20 + this.grid_size / 2) / this.grid_size);
+        let x = (evt.clientX - rect.left) * this.zoom_ratio;
+        let y = (evt.clientY - rect.top) * this.zoom_ratio;
+        this.mouse_x = Math.floor((x - this.margin + this.grid_size / 2) / this.grid_size);
+        this.mouse_y = Math.floor((y - this.margin + this.grid_size / 2) / this.grid_size);
 
-        this.mouse_state = Math.sqrt(Math.pow(20 + this.mouse_x * this.grid_size - x, 2) + Math.pow(20 + this.mouse_y * this.grid_size - y, 2)) < this.grid_size / 2.5;
+        this.mouse_state = Math.sqrt(Math.pow(this.margin + this.mouse_x * this.grid_size - x, 2) + Math.pow(this.margin + this.mouse_y * this.grid_size - y, 2)) < this.grid_size / 2.5;
     }
 
 
@@ -383,4 +390,6 @@ class Omok {
     }
 }
 
-let omok = new Omok();
+document.addEventListener("DOMContentLoaded", function(){
+    let omok = new Omok();
+});
