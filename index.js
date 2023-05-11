@@ -4,8 +4,10 @@ class Omok {
 
     constructor() {
         this.size = 800;
-        this.margin = this.size / 40;
-        this.grid_size = (this.size - 2 * this.margin) / 15;
+        this.margin = this.size / 35;
+        this.grid_size = (this.size - 2 * this.margin) / 14;
+
+        console.log(this.margin, this.grid_size);
 
         this.zoom_ratio = 1;
 
@@ -46,15 +48,14 @@ class Omok {
 
         this.pause_game = true;
 
-        
+
         this.canvas.addEventListener('mousemove', (evt) => {
             if (this.pause_game) return;
             this.getMouseCoord(evt);
         });
 
         this.canvas.addEventListener('click', (evt) => {
-            this.getMouseCoord(evt);
-            if (this.omok_board[this.mouse_y][this.mouse_x] !== -1 || !this.mouse_state) return;
+            if (this.omok_board[this.mouse_y][this.mouse_x] !== -1 || !this.mouse_state || this.pause_game) return;
             this.omok_board[this.mouse_y][this.mouse_x] = this.current_player;
             this.current_player = +!this.current_player;
             this.changeTurn();
@@ -63,7 +64,7 @@ class Omok {
 
         document.querySelector('#start-btn').addEventListener('click', this.onStartClicked);
 
-        this.changeResolution(5);
+        this.changeResolution(3);
         this.createOmokBoard();
         this.update();
 
@@ -85,10 +86,10 @@ class Omok {
         document.querySelector('.name-input').classList.add('transparent');
 
         setTimeout(() => document.querySelector('.name-input-wrapper').style.display = 'none', 1000);
+    }
 
-        if (this.canvas.clientWidth != this.size) {
-            this.zoom_ratio = this.size / this.canvas.clientWidth;
-        }
+    calcZoomRatio = () => {
+        this.zoom_ratio = this.size / this.canvas.clientWidth;
     }
 
     disablePlaying = () => {
@@ -151,26 +152,38 @@ class Omok {
     }
 
     drawGrid = () => {
-        for (let i = this.margin; i < this.margin + (this.size - 2 * this.margin); i += this.grid_size) {
+        for (let i = this.margin; i < this.size; i += this.grid_size) {
             this.ctx.beginPath();
             this.ctx.moveTo(this.margin, i);
             this.ctx.lineTo(this.size - this.margin, i);
             this.ctx.moveTo(i, this.margin);
             this.ctx.lineTo(i, this.size - this.margin);
-            this.ctx.lineWidth = 1;
+            this.ctx.lineWidth = 1.5;
             this.ctx.strokeStyle = '#000';
             this.ctx.stroke();
         }
+
+        const list = [[3, 3], [11, 3], [3, 11], [11, 11], [7, 7]];
+
+        for (const coord of list) {
+            const size = this.grid_size / 6;
+            this.ctx.fillStyle = '#000';
+            this.ctx.fillRect(this.margin + this.grid_size * coord[0] - size / 2, this.margin + this.grid_size * coord[1] - size / 2, size, size);
+        }
+
     }
 
-    drawBall = (x, y, color, stroke) => {
+    drawBall = (x, y, color, stroke = false, shadow = false) => {
         let realX = this.margin + x * this.grid_size;
         let realY = this.margin + y * this.grid_size;
         this.ctx.beginPath();
-        this.ctx.arc(realX, realY, this.grid_size / 3, 0, 2 * Math.PI);
+        this.ctx.arc(realX, realY, this.grid_size / 2.5, 0, 2 * Math.PI);
         stroke && this.ctx.stroke();
+        this.ctx.shadowColor = '#000';
+        this.ctx.shadowBlur = shadow ? '12' : '0';
         this.ctx.fillStyle = color;
         this.ctx.fill();
+        this.ctx.shadowBlur = '0';
     }
 
     announceWinner = () => {
@@ -187,6 +200,8 @@ class Omok {
 
         this.win_line_x_distance = this.winner_info[3][0] - this.winner_info[2][0];
         this.win_line_y_distance = this.winner_info[3][1] - this.winner_info[2][1];
+
+        this.pause_game = true;
     }
 
     easing = (x) => {
@@ -224,6 +239,7 @@ class Omok {
     }
 
     getMouseCoord = (evt) => {
+        this.calcZoomRatio();
         const rect = this.canvas.getBoundingClientRect();
         let x = (evt.clientX - rect.left) * this.zoom_ratio;
         let y = (evt.clientY - rect.top) * this.zoom_ratio;
@@ -248,7 +264,7 @@ class Omok {
             for (let j = 0; j < 16; j++) {
                 let player = this.omok_board[i][j];
                 if (player === -1) continue;
-                this.drawBall(j, i, player === 0 ? '#000' : '#FFF', true);
+                this.drawBall(j, i, player === 0 ? '#000' : '#FFF', false, true);
             }
         }
 
@@ -346,7 +362,7 @@ class Omok {
             coord[1]--;
         }
 
-        
+
         // diagonal right -> left
 
         current_state = [-1, -1];
@@ -390,6 +406,6 @@ class Omok {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
     let omok = new Omok();
 });
