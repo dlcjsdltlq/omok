@@ -85,7 +85,7 @@ class Omok {
 
         document.querySelector('.name-input').classList.add('transparent');
 
-        setTimeout(() => document.querySelector('.name-input-wrapper').style.display = 'none', 1000);
+        setTimeout(() => document.querySelector('.name-input-wrapper').style.display = 'none', 900);
     }
 
     calcZoomRatio = () => {
@@ -95,14 +95,12 @@ class Omok {
     disablePlaying = () => {
         this.darkning_state = 1;
         this.blur();
-        this.mouse_state = false;
         this.pause_game = true;
     }
 
     enablePlaying = () => {
         this.darkning_state = -1;
         this.blur();
-        this.mouse_state = true;
         this.pause_game = false;
     }
 
